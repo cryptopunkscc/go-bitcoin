@@ -1,6 +1,7 @@
 package lnd
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 
@@ -12,6 +13,22 @@ type Config struct {
 	Port         int    `json:"port"`
 	MacaroonPath string `json:"macaroon"`
 	CertPath     string `json:"cert"`
+}
+
+func (cfg *Config) Validate() error {
+	if cfg.Host == "" {
+		return errors.New("LND host missing")
+	}
+	if (cfg.Port < 1) || (cfg.Port > 65535) {
+		return errors.New("LND port invalid")
+	}
+	if cfg.MacaroonPath == "" {
+		return errors.New("LND macaroon path missing")
+	}
+	if cfg.CertPath == "" {
+		return errors.New("LND cert path missing")
+	}
+	return nil
 }
 
 func (cfg *Config) Macaroon() MacaroonCredential {
