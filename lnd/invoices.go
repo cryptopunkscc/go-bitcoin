@@ -40,7 +40,7 @@ func (lnd *Client) PayInvoice(invoice string) error {
 	})
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if res.PaymentError != "" {
