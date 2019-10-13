@@ -14,8 +14,20 @@ type Invoice struct {
 	State          int
 }
 
-type InvoiceHandler func(*Invoice)
+type InvoiceRequest struct {
+	Amount   Amount
+	Memo     string
+	ValidFor time.Duration
+}
 
 func (i Invoice) Paid() bool {
 	return i.PaidAt != time.Time{}
+}
+
+func (i Invoice) ExpiresIn() time.Duration {
+	now := time.Now()
+	if now.After(i.ExpiresAt) {
+		return 0
+	}
+	return i.ExpiresAt.Sub(now)
 }

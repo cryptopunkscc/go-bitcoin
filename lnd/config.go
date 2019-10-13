@@ -1,54 +1,47 @@
 package lnd
 
 import (
+	"crypto/x509"
 	"errors"
 	"fmt"
-	"io/ioutil"
-
 	"google.golang.org/grpc/credentials"
 )
 
 type Config struct {
-	Host         string `json:"host"`
-	Port         int    `json:"port"`
-	MacaroonPath string `json:"macaroon"`
-	CertPath     string `json:"cert"`
+	Host        string
+	Port        int
+	Macaroon    []byte
+	Certificate []byte
 }
 
-func (cfg *Config) Validate() error {
+func (cfg *Config) validate() error {
 	if cfg.Host == "" {
-		return errors.New("LND host missing")
+		return errors.New("host missing")
 	}
 	if (cfg.Port < 1) || (cfg.Port > 65535) {
-		return errors.New("LND port invalid")
+		return errors.New("port invalid")
 	}
-	if cfg.MacaroonPath == "" {
-		return errors.New("LND macaroon path missing")
+	if len(cfg.Macaroon) == 0 {
+		return errors.New("macaroon missing")
 	}
-	if cfg.CertPath == "" {
-		return errors.New("LND cert path missing")
+	if len(cfg.Certificate) == 0 {
+		return errors.New("cert missing")
 	}
 	return nil
 }
 
-func (cfg *Config) Macaroon() MacaroonCredential {
-	bytes, err := ioutil.ReadFile(cfg.MacaroonPath)
-
-	if err != nil {
-		return MacaroonCredential{}
-	}
-
-	return MacaroonCredential{bytes}
+func (cfg *Config) macaroonCreds() MacaroonCredential {
+	return MacaroonCredential{cfg.Macaroon}
 }
 
-func (cfg *Config) TLSCredentials() credentials.TransportCredentials {
-	tlsCreds, err := credentials.NewClientTLSFromFile(cfg.CertPath, "")
+func (cfg *Config) tlsCreds() credentials.TransportCredentials {
+	certPool := x509.NewCertPool()
 
-	if err != nil {
+	if !certPool.AppendCertsFromPEM(cfg.Certificate) {
 		return nil
 	}
 
-	return tlsCreds
+	return credentials.NewClientTLSFromCert(certPool, "")
 }
 
 func (cfg *Config) url() string {

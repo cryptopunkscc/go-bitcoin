@@ -16,12 +16,7 @@ type Channel struct {
 	RemotePublicKey string       // Public key of the remote node
 	FundingTxID     string       // TxID of the funding transaction
 	ShortChannelID  string       // BOLT7 channel ID
-	Capacity        int64        // Total capacity of the channel
-	Balance         int64        // Local balance of the channel
+	Capacity        Amount       // Total capacity of the channel
+	Balance         Amount       // Local balance of the channel
 	Online          bool         // Are we currently connected to the peer
-}
-
-type ChannelHandler interface {
-	ChannelOpened(*Channel)
-	ChannelClosed(*Channel)
 }

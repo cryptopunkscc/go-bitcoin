@@ -2,7 +2,7 @@ package bitcoin
 
 type Amount int64
 
-const msatsPerBtc = 100000000000
+const msatsPerBtc = 100_000_000_000
 
 func Sat(sats int64) Amount {
 	return Amount(sats * 1000)
