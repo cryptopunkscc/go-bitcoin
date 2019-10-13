@@ -36,17 +36,17 @@ func New(cfg *Config) (*Wallet, error) {
 	}
 
 	rpc := lnrpc.NewLightningClient(conn)
-	c := &Wallet{
+	wallet := &Wallet{
 		rpc:        rpc,
 		blockchain: &blockchain{rpc: rpc},
 		lightning:  &lightning{rpc: rpc},
 	}
-	return c, nil
+	return wallet, nil
 }
 
 // Network returns the network agent is connected to (mainnet, testnet, regtest)
-func (lnd *Wallet) Network(ctx context.Context) (string, error) {
-	info, err := lnd.rpc.GetInfo(ctx, &lnrpc.GetInfoRequest{}, nil)
+func (wallet *Wallet) Network(ctx context.Context) (string, error) {
+	info, err := wallet.rpc.GetInfo(ctx, &lnrpc.GetInfoRequest{})
 	if err != nil {
 		return "", err
 	}
@@ -59,20 +59,20 @@ func (lnd *Wallet) Network(ctx context.Context) (string, error) {
 }
 
 // Agent returns the agent name and version
-func (lnd *Wallet) Agent(ctx context.Context) (string, error) {
-	info, err := lnd.rpc.GetInfo(ctx, &lnrpc.GetInfoRequest{}, nil)
+func (wallet *Wallet) Agent(ctx context.Context) (string, error) {
+	info, err := wallet.rpc.GetInfo(ctx, &lnrpc.GetInfoRequest{})
 	if err != nil {
 		return "", err
 	}
-	return "lnd " + info.Version, nil
+	return "wallet " + info.Version, nil
 }
 
 // Blockchain returns an onchain client if available
-func (lnd *Wallet) Blockchain() bitcoin.Blockchain {
-	return lnd.blockchain
+func (wallet *Wallet) Blockchain() bitcoin.Blockchain {
+	return wallet.blockchain
 }
 
 // Lightning returns a lightning client if available
-func (lnd *Wallet) Lightning() bitcoin.Lightning {
-	return lnd.lightning
+func (wallet *Wallet) Lightning() bitcoin.Lightning {
+	return wallet.lightning
 }
