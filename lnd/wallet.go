@@ -64,7 +64,7 @@ func (wallet *Wallet) Agent(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return "wallet " + info.Version, nil
+	return "lnd " + info.Version, nil
 }
 
 // Blockchain returns an onchain client if available
