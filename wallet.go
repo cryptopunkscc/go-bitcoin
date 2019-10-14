@@ -9,8 +9,16 @@ type Wallet interface {
 	Lightning() Lightning
 }
 
+const (
+	DEFAULT = iota
+	P2WKH
+	NP2WKH
+)
+
 type Blockchain interface {
 	Balance(context.Context) (Amount, error)
+	NewAddress(ctx context.Context, addrType int) (string, error)
+	Send(ctx context.Context, address string, amount Amount, feeRate int) (string, error)
 }
 
 type Lightning interface {
